@@ -1,58 +1,115 @@
+import React, { useEffect, useState, useRef } from 'react'
+import {
+  // Languages
+  SiPython,
+  SiJavascript,
 
-import React, { useEffect, useState } from 'react'
+  // Web Technologies
+  SiReact,
+  SiRedux,
+  SiTailwindcss,
+  SiBootstrap,
+  SiDjango,
 
+  // Libraries & Frameworks
+  SiScikitlearn,
+  SiTensorflow,
+
+  // Databases
+  SiMysql,
+  SiPostgresql,
+
+  // Developer Tools
+  SiGithub,
+  SiJupyter,
+  SiPostman,
+  SiDocker,
+} from 'react-icons/si'
 function Landing() {
   const [isMenuOpen, setIsMenuOpen] = useState(false)
+const [isMenuClosing, setIsMenuClosing] = useState(false)
+const TOOLS = [
+  // Languages
+  { name: 'Python', Icon: SiPython },
+  { name: 'JavaScript', Icon: SiJavascript },
+
+  // Web Technologies
+  { name: 'React.js', Icon: SiReact },
+  { name: 'Redux', Icon: SiRedux },
+  { name: 'Tailwind CSS', Icon: SiTailwindcss },
+  { name: 'Bootstrap', Icon: SiBootstrap },
+  { name: 'Django', Icon: SiDjango },
+
+  // Libraries & Frameworks
+  { name: 'Scikit-learn', Icon: SiScikitlearn },
+  { name: 'TensorFlow', Icon: SiTensorflow },
+
+  // Databases
+  { name: 'MySQL', Icon: SiMysql },
+  { name: 'PostgreSQL', Icon: SiPostgresql },
+
+  // Developer Tools
+  { name: 'GitHub', Icon: SiGithub },
+  { name: 'Jupyter Notebook', Icon: SiJupyter },
+  { name: 'Postman', Icon: SiPostman },
+  { name: 'Docker', Icon: SiDocker },
+]
+
+const closeMenu = () => {
+  if (!isMenuOpen || isMenuClosing) return
+
+  setIsMenuClosing(true)
+
+  // First: animate menu content out
+  setTimeout(() => {
+    setIsMenuOpen(false)
+    setIsMenuClosing(false)
+  }, 350)
+}
   useEffect(() => {
-    if (!window.CursorSwarm) {
-      console.error('CursorSwarm not found. Check public/cursor-swarm.js')
-      return
-    }
-
-    const swarm = new window.CursorSwarm({
-  cursors: 3,
-  palette: 'mono',
-  startPosition: 'corners',
-
-  speed: 1,
-  adaptiveSpeed: true,
-  maxSpeed: 2,
-
-  deconstruct: true,
-  exitAfterBuild: 'home',
-  idle: 'dim',
-
-  frames: true,
-  hud: true,
-  hudPosition: 'bottom-left',
-  labels: true,
-  marquee: true,
-  guides: true,
-  sparks: true,
-  caret: true,
-
-  respectReducedMotion: true
-}).init()
-
+    if (!window.CursorSwarm) {console.error('CursorSwarm not found. Check public/cursor-swarm.js');return}
+    const swarm = new window.CursorSwarm({cursors: 3,palette: 'mono',startPosition: 'corners',speed: 1,adaptiveSpeed: true,maxSpeed: 2,deconstruct: true,exitAfterBuild: 'home',idle: 'dim',frames: true,hud: true,hudPosition: 'bottom-left',labels: true,marquee: true,guides: true,sparks: true,caret: true,respectReducedMotion: true}).init()
     return () => swarm.destroy()
   }, [])
+  useEffect(() => {
+  const elements = document.querySelectorAll('.journey-reveal')
 
+  const observer = new IntersectionObserver(
+    (entries) => {
+      entries.forEach((entry) => {
+        if (entry.isIntersecting) {
+          entry.target.classList.add('journey-visible')
+          observer.unobserve(entry.target)
+        }
+      })
+    },
+    {
+      threshold: 0.2,
+      rootMargin: '0px 0px -40px 0px',
+    }
+  )
+
+  elements.forEach((element) => observer.observe(element))
+
+  return () => observer.disconnect()
+}, [])
+const toolLoop = [...TOOLS, ...TOOLS]
   return (
     <main className="bg-[#190e0a] text-[#ffede7] min-h-screen selection:bg-[#ff5a00] selection:text-[#190e0a]">
       
 {/* RIGHT SIDE GLASS MENU */}
 
 <div
-  className={`fixed inset-0 z-50 transition-all duration-500 ${
+  className={`fixed inset-0 z-50 ${
     isMenuOpen
-      ? 'visible bg-black/40'
-      : 'invisible bg-transparent pointer-events-none'
+      ? 'visible'
+      : 'invisible pointer-events-none'
   }`}
 >
   {/* BACKGROUND OVERLAY */}
   <div
-    onClick={() => setIsMenuOpen(false)}
-    className={`absolute inset-0 transition-opacity duration-500 ${
+    onClick={closeMenu}
+    className={`absolute inset-0 bg-black/40 transition-opacity duration-500 ${
       isMenuOpen ? 'opacity-100' : 'opacity-0'
     }`}
   />
@@ -65,13 +122,16 @@ function Landing() {
       bg-[#190e0a]/75
       backdrop-blur-2xl
       shadow-[-20px_0_80px_rgba(0,0,0,0.35)]
-      transition-transform duration-500 ease-[cubic-bezier(0.22,1,0.36,1)]
       md:w-1/3
+
       ${
-        isMenuOpen
-          ? 'translate-x-0'
-          : 'translate-x-full'
-      }`}
+        isMenuClosing
+          ? 'menu-panel-exit'
+          : isMenuOpen
+            ? 'translate-x-0 menu-panel-enter'
+            : 'translate-x-full'
+      }
+    `}
   >
 
     {/* TOP SECTION */}
@@ -79,7 +139,7 @@ function Landing() {
 
       {/* CIRCULAR CLOSE BUTTON */}
       <button
-  onClick={() => setIsMenuOpen(false)}
+  onClick={closeMenu}
   aria-label="Close menu"
   className="flex h-11 w-11 items-center justify-center rounded-full border border-white/15 bg-white/5 text-[#ffede7] transition hover:border-[#ff8e60]/60 hover:bg-[#ff5a00]/20 hover:text-[#ff8e60]"
 >
@@ -103,18 +163,30 @@ function Landing() {
 
       {[
         ['01', 'Home', '#'],
-        ['02', 'About', '#about'],
+        ['02', 'About', '#'],
         ['03', 'Expertise', '#services'],
         ['04', 'Work', '#work'],
         ['05', 'Contact', '#contact']
       ].map(([number, title, link]) => (
 
         <a
-          key={number}
-          href={link}
-          onClick={() => setIsMenuOpen(false)}
-          className="group flex items-center gap-5 border-b border-white/10 py-6"
-        >
+  key={number}
+  href={link}
+  onClick={closeMenu}
+  style={{
+    transitionDelay: isMenuClosing
+      ? `${(4 - Number(number)) * 35}ms`
+      : `${Number(number) * 70}ms`
+  }}
+  className={`group flex items-center gap-5 border-b border-white/10 py-6
+    transition-all duration-300 ease-in
+    ${
+      isMenuClosing
+        ? 'translate-y-8 opacity-0'
+        : 'translate-y-0 opacity-100'
+    }
+  `}
+>
           <span className="text-xs text-[#b88b78] transition group-hover:text-[#ff8e60]">
             {number}
           </span>
@@ -134,7 +206,17 @@ function Landing() {
     </div>
 
     {/* BOTTOM SOCIAL ICONS */}
-    <div className="flex items-center justify-between border-t border-white/10 px-8 py-8 md:px-12">
+    {/* BOTTOM SOCIAL ICONS */}
+<div
+  className={`flex items-center justify-between border-t border-white/10 px-8 py-8 md:px-12
+    transition-all duration-300
+    ${
+      isMenuClosing
+        ? 'translate-y-8 opacity-0'
+        : 'translate-y-0 opacity-100'
+    }
+  `}
+>
 
       <span className="text-[10px] tracking-[0.2em] text-[#b88b78]">
         LET'S CONNECT
@@ -277,7 +359,8 @@ function Landing() {
 
       <a
   href="/Ayaz-CV.pdf"
-  download
+  target="_blank"
+  rel="noopener noreferrer"
   data-cs-ignore
   className="mt-9 inline-flex items-center gap-4 rounded-full border border-[#ff8e60]/40 bg-[#ff5a00] px-7 py-4 text-xs font-semibold tracking-widest text-[#190e0a] opacity-100 visible transition-all duration-300 hover:-translate-y-1"
 >
@@ -340,299 +423,264 @@ function Landing() {
 
 </section>
 
-      {/* ABOUT */}
-      <section id="about" className="border-t border-[#4b2a1d]">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-28 md:py-36">
+      {/* TECH STACK MARQUEE */}
+<section
+  id="services"
+  className="overflow-hidden border-y border-[#4b2a1d] bg-[#21120d]"
+>
+  <style>{`
+    @keyframes tc-marquee {
+      from { transform: translateX(0); }
+      to { transform: translateX(-50%); }
+    }
 
-          <p className="text-xs tracking-[0.25em] text-[#b88b78] mb-16">
-            01 / ABOUT
-          </p>
+    .tc-track {
+      animation: tc-marquee 32s linear infinite;
+    }
 
-          <div className="grid md:grid-cols-2 gap-16">
-            <h2 data-cs="type" className="text-4xl md:text-6xl tracking-tight font-medium leading-tight">
-              Curious by nature.
-              <br />
-              <span className="text-[#ff8e60]">Developer by choice.</span>
-            </h2>
+    .tc-fade {
+      -webkit-mask-image: linear-gradient(
+        to right,
+        transparent,
+        #000 12%,
+        #000 88%,
+        transparent
+      );
+      mask-image: linear-gradient(
+        to right,
+        transparent,
+        #000 12%,
+        #000 88%,
+        transparent
+      );
+    }
 
-            <div>
-              <p data-cs="words" className="text-lg text-[#d8b5a4] leading-relaxed mb-8">
-                I enjoy turning ideas into useful digital experiences.
-                My interests include full-stack development, modern
-                web technologies, artificial intelligence, and
-                open-source software.
-              </p>
+    @media (prefers-reduced-motion: reduce) {
+      .tc-track {
+        animation: none;
+      }
+    }
+  `}</style>
 
-              <p data-cs="words" className="text-lg text-[#d8b5a4] leading-relaxed">
-                I believe good technology should be simple to use,
-                carefully designed, and built to solve meaningful
-                problems. I'm always learning, experimenting, and
-                improving my skills.
-              </p>
+  <div className="mx-auto max-w-7xl px-6 py-36 md:px-12">
+    <p className="text-xs tracking-[0.25em] text-[#b88b78] mb-12">
+  01 / TECH STACK
+</p>
+    <p className="mb-6 text-[11px] text-center tracking-[0.3em] text-[#b88b78]">
+      BUILT WITH
+    </p>
 
-              <div className="mt-12 grid grid-cols-2 gap-8 border-t border-[#4b2a1d] pt-8">
-                <div>
-                  <p className="text-3xl font-semibold">01.</p>
-                  <p className="text-xs tracking-widest text-[#b88b78] mt-2">KEEP LEARNING</p>
-                </div>
-                <div>
-                  <p className="text-3xl font-semibold">02.</p>
-                  <p className="text-xs tracking-widest text-[#b88b78] mt-2">KEEP BUILDING</p>
-                </div>
-              </div>
-            </div>
+    <h2
+      data-cs="type"
+      className="mb-6 text-4xl text-center font-medium tracking-tight md:text-6xl"
+    >
+      A Modern, Production-Toolchain Stack
+    </h2>
+
+    <p className="mx-auto mb-24 max-w-xl text-center leading-relaxed text-[#c49a88]">
+      A stack I chose for speed, reliability, and clean developer experience
+      from state management to deployment.
+    </p>
+
+    {/* INFINITE MARQUEE */}
+    <div className="tc-fade overflow-hidden">
+      <div className="tc-track flex w-max gap-6 hover:[animation-play-state:paused]">
+
+        {toolLoop.map(({ name, Icon }, i) => (
+          <div
+            key={i}
+            className="flex h-32 w-32 shrink-0 flex-col items-center justify-center gap-4 rounded-2xl border border-[#4b2a1d] bg-[#2a170f]"
+          >
+            <Icon className="text-4xl text-[#b88b78]" />
+
+            <span className="text-xs text-[#b88b78]/80">
+              {name}
+            </span>
           </div>
-        </div>
-      </section>
+        ))}
 
-      {/* EXPERTISE */}
-      <section id="services" className="bg-[#21120d] border-y border-[#4b2a1d]">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-28">
+      </div>
+    </div>
 
-          <p className="text-xs tracking-[0.25em] text-[#b88b78] mb-12">
-            02 / EXPERTISE
-          </p>
+  </div>
+</section>
 
-          <h2 data-cs="type" className="text-5xl md:text-7xl font-medium tracking-tight mb-20">
-            What I work with.
-          </h2>
+      
+{/* SELECTED WORK / PROJECTS SLIDER */}
 
-          <div className="grid md:grid-cols-3 gap-5">
+<style>{`
+  .ps-track {
+    scrollbar-width: none;
+  }
 
-            <div data-cs="frame" className="bg-[#2a170f] border border-[#4b2a1d] p-8 md:p-10 min-h-72">
-              <p className="text-xs text-[#b88b78] tracking-widest mb-14">A / 01</p>
-              <h3 className="text-2xl font-medium mb-5">Frontend</h3>
-              <p className="text-[#c49a88] leading-relaxed">
-                Creating responsive interfaces and interactive
-                experiences using React, JavaScript, HTML, and CSS.
-              </p>
+  .ps-track::-webkit-scrollbar {
+    display: none;
+  }
+
+  .ps-card img {
+    transition:
+      transform 700ms cubic-bezier(.2,.7,.2,1),
+      filter 700ms ease;
+  }
+
+  .ps-card:hover img {
+    transform: scale(1.045);
+    filter: brightness(0.48);
+  }
+
+  .ps-card:focus-visible {
+    outline: 2px solid #b88b78;
+    outline-offset: 5px;
+  }
+`}</style>
+
+<section
+  id="work"
+  className="overflow-hidden border-y border-[#4b2a1d] bg-[#21120d]"
+>
+  <div className="mx-auto w-full max-w-7xl px-6 pb-5 pt-8 md:px-12 md:pb-6 md:pt-10">
+
+    <p className="mb-12 text-xs tracking-[0.25em] text-[#b88b78]">
+      02 / WORK
+    </p>
+
+    <div className="mb-14">
+      <h2
+        data-cs="type"
+        className="text-5xl font-medium leading-tight tracking-tight text-[#f0dfd3] md:text-7xl"
+      >
+        Inspired by Great Design,
+        <br />
+        Fueled by Modern Tools.
+      </h2>
+
+      <p className="mt-5 max-w-md text-sm leading-relaxed text-[#a98b7d]">
+        A collection of experiments, applications and solutions
+        built through code and creativity.
+      </p>
+    </div>
+  </div>
+
+  {/* PROJECT CARDS */}
+
+  <div className="pb-8">
+    <div
+      id="projects-track"
+className="ps-track flex snap-x snap-mandatory gap-6 overflow-x-auto pl-40 pr-6 pb-5 md:pl-[max(160px,calc((100vw-1216px)/2+48px))] md:pr-12"    >
+
+      {[
+        {
+    title: "ClaimBrain",
+    desc: "An end-to-end claims automation platform that automatically verifies, validates, and processes insurance claims from submission to checkout, streamlining the entire claims management workflow.",
+    tech: ["Django", "React", "YOLO"],
+    image: "https://images.unsplash.com/photo-1454165804606-c3d57bc86b40?w=1200&q=85",
+    href: "https://claim-brain.vercel.app/",
+  },
+  {
+    title: "Job Listing Portal",
+    desc: "A full-stack job listing platform supporting two user roles. Job seekers can explore opportunities and apply for openings, while employers can publish job listings and manage applicants.",
+    tech: ["Django", "React", "PostgreSQL"],
+    image: "https://images.unsplash.com/photo-1521737711867-e3b97375f902?w=1200&q=85",
+    href: "https://jobleloo.vercel.app/",
+  },
+  {
+    title: "CertifyyHub",
+    desc: "A full-stack internship certificate distribution platform where organizations can bulk-upload intern information through CSV or Excel files, while interns can securely search, verify, and download their certificates.",
+    tech: ["React", "Clerk", "Django"],
+    image: "https://images.unsplash.com/photo-1434030216411-0b793f4b4173?w=1200&q=85",
+    href: "https://certifyy-hub.vercel.app/",
+  },
+  {
+    title: "Network Intrusion Detection",
+    desc: "An intelligent network security solution that analyzes network traffic, identifies suspicious activities, and detects potential cyber threats using machine learning and deep learning techniques.",
+    tech: ["React", "TensorFlow", "NumPy"],
+    image: "https://images.unsplash.com/photo-1550751827-4bd374c3f58b?w=1200&q=85",
+    href: "https://intrusionguard.vercel.app/",
+  },
+  {
+    title: "EvFinder",
+    desc: "A fully responsive EV charging route finder featuring turn-by-turn navigation, real-time traffic information, and smart charging station discovery. Built with modern React libraries and integrated with TomTom API, without requiring a backend.",
+    tech: ["React", "TomTom API", "Leaflet"],
+    image: "https://images.unsplash.com/photo-1593941707882-a5bba14938c7?w=1200&q=85",
+    href: "https://ev-route-finder.vercel.app/",
+  },
+  {
+  title: "Foodie",
+  desc: "A fully responsive, mobile-first food delivery platform developed as part of HacktoberFest 2025. Designed with accessibility, performance, and scalability in mind, it allows users to browse menus, customize orders, and enjoy a seamless food ordering experience across devices.",
+  tech: ["Open Source", "React", "JavaScript", "Responsive Design"],
+  image: "https://images.unsplash.com/photo-1555939594-58d7cb561ad1?w=1200&q=85",
+  href: "#",
+},
+      ].map((p, i, projects) => (
+        <a
+          key={p.title}
+          data-card
+          href={p.href}
+          className="ps-card group relative h-[280px] w-[85vw] shrink-0 snap-start overflow-hidden rounded-[22px] border border-[#4b2a1d] bg-[#2a170f]  md:h-[320px] md:w-[560px]"
+        >
+
+          {/* PROJECT IMAGE */}
+          <img
+            src={p.image}
+            alt={p.title}
+            loading="lazy"
+            draggable={false}
+            className="absolute inset-0 h-full w-full object-cover"
+          />
+
+          {/* DARK OVERLAY */}
+          <div className="absolute inset-0 bg-gradient-to-t from-[#120a07] via-[#21120d]/20 to-transparent" />
+
+          {/* PROJECT NUMBER */}
+          <span className="absolute right-6 top-6 rounded-full border border-white/15 bg-[#21120d]/60 px-4 py-2 text-xs tracking-wider text-[#f0dfd3] backdrop-blur-md">
+            {String(i + 1).padStart(2, "0")} / {String(projects.length).padStart(2, "0")}
+          </span>
+
+          {/* PROJECT CONTENT */}
+          <div className="absolute bottom-0 left-0 right-0 p-6 text-[#f0dfd3] md:p-8">
+
+            <div className="mb-4 flex flex-wrap gap-2">
+              {p.tech.map((item) => (
+                <span
+                  key={item}
+                  className="rounded-full border border-[#d0a18b]/30 bg-[#21120d]/65 px-3 py-1.5 text-[11px] tracking-wide text-[#e3bda9] backdrop-blur-md"
+                >
+                  {item}
+                </span>
+              ))}
             </div>
 
-            <div data-cs="frame" className="bg-[#2a170f] border border-[#4b2a1d] p-8 md:p-10 min-h-72">
-              <p className="text-xs text-[#b88b78] tracking-widest mb-14">A / 02</p>
-              <h3 className="text-2xl font-medium mb-5">Backend</h3>
-              <p className="text-[#c49a88] leading-relaxed">
-                Developing application logic, APIs, database
-                integrations, and server-side functionality.
-              </p>
-            </div>
+            <h3 className="text-2xl font-medium leading-tight md:text-[32px]">
+              {p.title}
+            </h3>
 
-            <div data-cs="frame" className="bg-[#2a170f] border border-[#4b2a1d] p-8 md:p-10 min-h-72">
-              <p className="text-xs text-[#b88b78] tracking-widest mb-14">A / 03</p>
-              <h3 className="text-2xl font-medium mb-5">Exploration</h3>
-              <p className="text-[#c49a88] leading-relaxed">
-                Experimenting with AI, emerging technologies,
-                automation, and open-source projects.
-              </p>
-            </div>
-
-          </div>
-        </div>
-      </section>
-
-      {/* TECHNOLOGIES */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 py-28">
-
-        <p className="text-xs tracking-[0.25em] text-[#b88b78] mb-12">
-          03 / TOOLKIT
-        </p>
-
-        <div className="flex flex-col md:flex-row justify-between gap-12">
-          <h2 data-cs="type" className="text-5xl md:text-6xl tracking-tight font-medium">
-            Tools of the trade.
-          </h2>
-
-          <p className="max-w-md text-[#c49a88] leading-relaxed">
-            Technologies are tools for turning ideas into reality.
-            Here are some of the technologies I work with and
-            continue to explore.
-          </p>
-        </div>
-
-        <div className="mt-20 grid grid-cols-2 md:grid-cols-4 border-t border-l border-[#4b2a1d]">
-
-          {[
-            'HTML & CSS',
-            'JavaScript',
-            'React',
-            'Tailwind CSS',
-            'Python',
-            'Django',
-            'Git & GitHub',
-            'REST APIs',
-            'Node.js',
-            'SQL',
-            'AI / ML',
-            'Blockchain'
-          ].map((skill, index) => (
-            <div data-cs="frame" key={skill} className="border-r border-b border-[#4b2a1d] p-7 md:p-10 hover:bg-[#3a1d12] transition">
-              <p className="text-xs text-[#b88b78] mb-7">
-                {String(index + 1).padStart(2, '0')}
-              </p>
-              <h3 className="text-base md:text-lg font-medium">{skill}</h3>
-            </div>
-          ))}
-
-        </div>
-      </section>
-
-      {/* PROJECTS */}
-      <section id="work" className="bg-[#21120d] border-y border-[#4b2a1d]">
-        <div className="max-w-7xl mx-auto px-6 md:px-12 py-28">
-
-          <p className="text-xs tracking-[0.25em] text-[#b88b78] mb-12">
-            04 / SELECTED WORK
-          </p>
-
-          <div className="flex flex-col md:flex-row justify-between md:items-end gap-8 mb-20">
-            <h2 data-cs="type" className="text-5xl md:text-7xl font-medium tracking-tight">
-              Things I've built.
-            </h2>
-
-            <p className="text-[#c49a88] max-w-sm leading-relaxed">
-              A selection of projects, experiments, and ideas
-              brought to life through code.
+            <p className="mt-3 max-w-xl text-sm leading-relaxed text-[#e4d2c8]/80 opacity-100 transition-all duration-500 md:max-h-0 md:translate-y-3 md:overflow-hidden md:opacity-0 md:group-hover:max-h-24 md:group-hover:translate-y-0 md:group-hover:opacity-100">
+              {p.desc}
             </p>
           </div>
 
-          <div className="grid md:grid-cols-2 gap-6">
+          {/* ARROW */}
+          <span className="absolute bottom-8 right-7 grid h-11 w-11 place-items-center rounded-full border border-white/20 bg-[#21120d]/50 text-lg text-[#f0dfd3] backdrop-blur-md transition duration-300 group-hover:border-[#d0a18b] group-hover:bg-[#d0a18b] group-hover:text-[#21120d] md:bottom-10 md:right-10">
+            ↗
+          </span>
 
-            <article data-cs="frame" className="bg-[#2a170f] border border-[#4b2a1d] group">
-              <div className="h-64 md:h-80 bg-[#5d1b00] flex items-center justify-center overflow-hidden">
-                <span className="text-5xl md:text-7xl font-semibold tracking-tighter text-[#b88b78] group-hover:scale-110 transition duration-500">
-                  CB.
-                </span>
-              </div>
-              <div className="p-8">
-                <p className="text-xs text-[#b88b78] tracking-widest mb-4">01 / MACHINE LEARNING</p>
-                <h3 className="text-2xl font-medium mb-3">ClaimBrain</h3>
-                <p className="text-[#c49a88] leading-relaxed">
-                  An end-to-end claims automation application
-                  designed to simplify insurance claim processing
-                  using machine learning.
-                </p>
-                <p className="mt-7 text-xs tracking-widest text-[#b88b78]">
-                  REACT · DJANGO · MACHINE LEARNING
-                </p>
-              </div>
-            </article>
+        </a>
+      ))}
 
-            <article data-cs="frame" className="bg-[#2a170f] border border-[#4b2a1d] group">
-              <div className="h-64 md:h-80 bg-[#ad3a00] flex items-center justify-center overflow-hidden">
-                <span className="text-5xl md:text-7xl font-semibold tracking-tighter text-[#c49a88] group-hover:scale-110 transition duration-500">
-                  WEB.
-                </span>
-              </div>
-              <div className="p-8">
-                <p className="text-xs text-[#b88b78] tracking-widest mb-4">02 / WEB DEVELOPMENT</p>
-                <h3 className="text-2xl font-medium mb-3">Portfolio Website</h3>
-                <p className="text-[#c49a88] leading-relaxed">
-                  A minimal digital space showcasing development
-                  projects, technical interests, and creative
-                  experiments.
-                </p>
-                <p className="mt-7 text-xs tracking-widest text-[#b88b78]">
-                  REACT · JAVASCRIPT · TAILWIND CSS
-                </p>
-              </div>
-            </article>
+    </div>
+  </div>
 
-            <article data-cs="frame" className="bg-[#2a170f] border border-[#4b2a1d] group">
-              <div className="h-64 md:h-80 bg-[#5d1b00] flex items-center justify-center overflow-hidden">
-                <span className="text-5xl md:text-7xl font-semibold tracking-tighter text-[#b88b78] group-hover:scale-110 transition duration-500">
-                  AI.
-                </span>
-              </div>
-              <div className="p-8">
-                <p className="text-xs text-[#b88b78] tracking-widest mb-4">03 / EXPERIMENTATION</p>
-                <h3 className="text-2xl font-medium mb-3">AI Experiments</h3>
-                <p className="text-[#c49a88] leading-relaxed">
-                  Exploring artificial intelligence and building
-                  practical applications with emerging AI tools.
-                </p>
-                <p className="mt-7 text-xs tracking-widest text-[#b88b78]">
-                  PYTHON · AI · API INTEGRATION
-                </p>
-              </div>
-            </article>
+  
+</section>
 
-            <article data-cs="frame" className="bg-[#2a170f] border border-[#4b2a1d] group">
-              <div className="h-64 md:h-80 bg-[#ad3a00] flex items-center justify-center overflow-hidden">
-                <span className="text-5xl md:text-7xl font-semibold tracking-tighter text-[#c49a88] group-hover:scale-110 transition duration-500">
-                  OSS.
-                </span>
-              </div>
-              <div className="p-8">
-                <p className="text-xs text-[#b88b78] tracking-widest mb-4">04 / OPEN SOURCE</p>
-                <h3 className="text-2xl font-medium mb-3">Open Source Contributions</h3>
-                <p className="text-[#c49a88] leading-relaxed">
-                  Participating in engineering challenges,
-                  technical investigations, and open-source
-                  community initiatives.
-                </p>
-                <p className="mt-7 text-xs tracking-widest text-[#b88b78]">
-                  GITHUB · COLLABORATION · DEVELOPMENT
-                </p>
-              </div>
-            </article>
 
-          </div>
-        </div>
-      </section>
-
-      {/* APPROACH */}
-      <section className="max-w-7xl mx-auto px-6 md:px-12 py-28">
-
-        <p className="text-xs tracking-[0.25em] text-[#b88b78] mb-14">
-          05 / MY APPROACH
-        </p>
-
-        <h2 data-cs="type" className="text-5xl md:text-7xl font-medium tracking-tight max-w-4xl leading-tight">
-          Think clearly.
-          <br />
-          Build carefully.
-          <br />
-          <span className="text-[#ff8e60]">Improve constantly.</span>
-        </h2>
-
-        <div className="mt-24 grid md:grid-cols-3 gap-12 border-t border-[#4b2a1d] pt-10">
-
-          <div>
-            <p className="text-xs text-[#b88b78] tracking-widest mb-6">01 / DISCOVER</p>
-            <h3 className="text-xl font-medium mb-4">Understand the problem.</h3>
-            <p className="text-[#c49a88] leading-relaxed">
-              Every useful solution starts with understanding
-              what needs to be solved and why it matters.
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs text-[#b88b78] tracking-widest mb-6">02 / CREATE</p>
-            <h3 className="text-xl font-medium mb-4">Turn ideas into reality.</h3>
-            <p className="text-[#c49a88] leading-relaxed">
-              I enjoy experimenting, writing code, and
-              transforming concepts into working applications.
-            </p>
-          </div>
-
-          <div>
-            <p className="text-xs text-[#b88b78] tracking-widest mb-6">03 / REFINE</p>
-            <h3 className="text-xl font-medium mb-4">Make it better.</h3>
-            <p className="text-[#c49a88] leading-relaxed">
-              Testing, learning, and improving are essential
-              parts of building better digital experiences.
-            </p>
-          </div>
-
-        </div>
-      </section>
-
+      
       {/* CONTACT */}
       <section id="contact" className="bg-black text-white">
         <div className="max-w-7xl mx-auto px-6 md:px-12 py-32">
 
           <p className="text-xs tracking-[0.25em] text-gray-500 mb-16">
-            06 / GET IN TOUCH
+            03 / GET IN TOUCH
           </p>
 
           <h2 data-cs="type" className="text-5xl md:text-8xl font-medium tracking-tighter leading-tight">
