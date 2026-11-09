@@ -234,7 +234,7 @@ function Landing() {
             </div>
           </div>
           <div className="pb-8">
-            <div id="projects-track" className="ps-track flex snap-x snap-mandatory gap-6 overflow-x-auto pl-40 pr-6 pb-5 md:pl-[max(160px,calc((100vw-1216px)/2+48px))] md:pr-12">
+            <div id="projects-track" className="ps-track flex snap-x snap-mandatory gap-6 overflow-x-auto pr-6 pb-5 md:pr-12" style={{paddingLeft: "max(24px, calc((100vw - 1280px) / 2 + 48px))", scrollPaddingLeft: "max(24px, calc((100vw - 1280px) / 2 + 48px))",}}>
               {[
                 {
                   title: "ClaimBrain",
