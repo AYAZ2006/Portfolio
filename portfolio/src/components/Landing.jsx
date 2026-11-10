@@ -118,7 +118,7 @@ function Landing() {
     setTimeout(() => {
       setIsMenuOpen(false)
       setIsMenuClosing(false)
-      menuBtnRef.current?.focus()
+      menuBtnRef.current?.focus({ preventScroll: true })
     }, 350)
   }
 
